@@ -32,3 +32,103 @@ for (let i = 0; i < snakeStartLength; i++) {
 // spawn food
 spawnFood();
 
+// game loop
+setInterval(() => {
+  moveSnake();
+  checkCollisions();
+  updateScore();
+}, 100);
+
+// handle keyboard input
+document.addEventListener('keydown', (e) => {
+  switch (e.key) {
+    case 'ArrowUp':
+      if (direction !== 'down') direction = 'up';
+      break;
+    case 'ArrowDown':
+      if (direction !== 'up') direction = 'down';
+      break;
+    case 'ArrowLeft':
+      if (direction !== 'right') direction = 'left';
+      break;
+    case 'ArrowRight':
+      if (direction !== 'left') direction = 'right';
+      break;
+  }
+});
+
+// move snake
+function moveSnake() {
+    const head = snake[0];
+    let newX = head.x;
+    let newY = head.y;
+  
+    switch (direction) {
+      case 'up':
+        newY = (newY - 1 + boardSize) % boardSize;
+        break;
+      case 'down':
+        newY = (newY + 1) % boardSize;
+        break;
+      case 'left':
+        newX = (newX - 1 + boardSize) % boardSize;
+        break;
+      case 'right':
+        newX = (newX + 1) % boardSize;
+        break;
+    }
+  
+    const newHead = { x: newX, y: newY };
+    snake.unshift(newHead);
+  
+    const tail = snake.pop();
+    const tailCell = gameBoard.children[tail.y * boardSize + tail.x];
+    tailCell.className = 'cell';
+  
+    const headCell = gameBoard.children[newHead.y * boardSize + newHead.x];
+    headCell.className += ' snake';
+  }
+
+// check collisions
+function checkCollisions() {
+  const head = snake[0];
+  if (
+    head.x < 0 || head.x >= boardSize ||
+    head.y < 0 || head.y >= boardSize ||
+    snake.slice(1).some((part) => part.x === head.x && part.y === head.y)
+  ) {
+    gameOver();
+  }
+
+  if (food && head.x === food.x && head.y === food.y) {
+    eatFood();
+  }
+}
+
+// spawn food
+function spawnFood() {
+  let randomX;
+  let randomY;
+  do {
+    randomX = Math.floor(Math.random() * boardSize);
+    randomY = Math.floor(Math.random() * boardSize);
+  } while (snake.some((part) => part.x === randomX && part.y === randomY));
+
+  food = { x: randomX, y: randomY };
+  const foodCell = gameBoard.children[food.y * boardSize + food.x];
+  foodCell.className += ' food';
+}
+
+// eat food
+function eatFood() {
+  score++;
+  scoreElement.textContent = `Score: ${score}`;
+  snake.push({ x: food.x, y: food.y });
+  spawnFood();
+}
+
+// game over
+function gameOver() {
+  alert(`Game Over! Your score is ${score}`);
+  location.reload();
+}
