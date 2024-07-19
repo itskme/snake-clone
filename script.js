@@ -14,6 +14,8 @@ let food = null;
 let score = 0;
 let direction = 'right';
 let speed = 100; // default speed
+let gameStarted = false;
+let intervalId = null;
 
 // create game board
 for (let i = 0; i < boardSize; i++) {
@@ -34,15 +36,16 @@ for (let i = 0; i < snakeStartLength; i++) {
 // spawn food
 spawnFood();
 
-// game loop
-let intervalId = setInterval(() => {
-  moveSnake();
-  checkCollisions();
-  updateScore();
-}, speed);
-
 // handle keyboard input
 document.addEventListener('keydown', (e) => {
+  if (!gameStarted) {
+    gameStarted = true;
+    intervalId = setInterval(() => {
+      moveSnake();
+      checkCollisions();
+      updateScore();
+    }, speed);
+  }
   switch (e.key) {
     case 'ArrowUp':
       if (direction !== 'down') direction = 'up';
@@ -63,11 +66,13 @@ document.addEventListener('keydown', (e) => {
 speedSelect.addEventListener('change', (e) => {
   clearInterval(intervalId);
   speed = parseInt(e.target.value);
-  intervalId = setInterval(() => {
-    moveSnake();
-    checkCollisions();
-    updateScore();
-  }, speed);
+  if (gameStarted) {
+    intervalId = setInterval(() => {
+      moveSnake();
+      checkCollisions();
+      updateScore();
+    }, speed);
+  }
 });
 
 // move snake
