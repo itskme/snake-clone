@@ -1,6 +1,7 @@
 const gameContainer = document.getElementById('game-container');
 const gameBoard = document.getElementById('game-board');
 const scoreElement = document.getElementById('score');
+const speedSelect = document.getElementById('speed-select');
 
 // game settings
 const boardSize = 20;
@@ -12,6 +13,7 @@ let snake = [];
 let food = null;
 let score = 0;
 let direction = 'right';
+let speed = 100; // default speed
 
 // create game board
 for (let i = 0; i < boardSize; i++) {
@@ -33,11 +35,11 @@ for (let i = 0; i < snakeStartLength; i++) {
 spawnFood();
 
 // game loop
-setInterval(() => {
+let intervalId = setInterval(() => {
   moveSnake();
   checkCollisions();
   updateScore();
-}, 100);
+}, speed);
 
 // handle keyboard input
 document.addEventListener('keydown', (e) => {
@@ -57,37 +59,48 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
+// handle speed change
+speedSelect.addEventListener('change', (e) => {
+  clearInterval(intervalId);
+  speed = parseInt(e.target.value);
+  intervalId = setInterval(() => {
+    moveSnake();
+    checkCollisions();
+    updateScore();
+  }, speed);
+});
+
 // move snake
 function moveSnake() {
-    const head = snake[0];
-    let newX = head.x;
-    let newY = head.y;
-  
-    switch (direction) {
-      case 'up':
-        newY = (newY - 1 + boardSize) % boardSize;
-        break;
-      case 'down':
-        newY = (newY + 1) % boardSize;
-        break;
-      case 'left':
-        newX = (newX - 1 + boardSize) % boardSize;
-        break;
-      case 'right':
-        newX = (newX + 1) % boardSize;
-        break;
-    }
-  
-    const newHead = { x: newX, y: newY };
-    snake.unshift(newHead);
-  
-    const tail = snake.pop();
-    const tailCell = gameBoard.children[tail.y * boardSize + tail.x];
-    tailCell.className = 'cell';
-  
-    const headCell = gameBoard.children[newHead.y * boardSize + newHead.x];
-    headCell.className += ' snake';
+  const head = snake[0];
+  let newX = head.x;
+  let newY = head.y;
+
+  switch (direction) {
+    case 'up':
+      newY = (newY - 1 + boardSize) % boardSize;
+      break;
+    case 'down':
+      newY = (newY + 1) % boardSize;
+      break;
+    case 'left':
+      newX = (newX - 1 + boardSize) % boardSize;
+      break;
+    case 'right':
+      newX = (newX + 1) % boardSize;
+      break;
   }
+
+  const newHead = { x: newX, y: newY };
+  snake.unshift(newHead);
+
+  const tail = snake.pop();
+  const tailCell = gameBoard.children[tail.y * boardSize + tail.x];
+  tailCell.className = 'cell';
+
+  const headCell = gameBoard.children[newHead.y * boardSize + newHead.x];
+  headCell.className += ' snake';
+}
 
 // check collisions
 function checkCollisions() {

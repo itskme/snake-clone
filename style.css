@@ -48,7 +48,7 @@
 
   h1 {
     color: #00ff00;
-    padding-top: 140px;
+    padding-top: 10px;
     text-align: center;
     font-size: 30px;
   }
@@ -58,3 +58,19 @@
     padding-top: 20px;
     text-align: center;
   }
+
+  #speed-select {
+    background-color: rgb(74, 158, 25); 
+    color: rgb(0, 0, 0); 
+    border-radius: 4px;
+    padding: 10px; 
+    font-size: 18px;
+    border-color: #ff0000;
+    border-width: 2px;
+  }
+
+  .buttons {
+    text-align: center;
+    padding-top: 125px;
+  }
+  
